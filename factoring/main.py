@@ -195,15 +195,11 @@ def process(n):
         print('>>factors:', factors)
         x = stack.pop(-1)
         if isprime(x):
-            # on a trouvé un facteur 1er => on ajoute à la liste
             factors.append(x)
         else:
-            # on calcule une nouvelle décomposition
             xa, xb = pollardrho(x)
 
             if xa == 1 or xb == 1:
-                # echec: x n'est pas 1er mais sa decomposition ne se fait pas
-                # on essaie une décomposition par division
                 xa, xb = factorsdiv2(x)
 
             #xa, xb = pollardpminus1(x)
@@ -227,10 +223,6 @@ if __name__ == '__main__':
 
     n = response['n']
     id = response['id']
-
-    # temps de 32 sec
-    #n = 15651483603239584752070873247473477662695033558666859835446843507446266207253517620695204448080
-    #id = 2683730056
 
     print('-' * 80)
     print('length:', len(str(n)))
