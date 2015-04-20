@@ -148,7 +148,7 @@ def pollardrho(n):
         xa = f(xa) % n
         xb = f(f(xb)) % n
         tmp = (xa - xb)
-        for i in range(1000):
+        for i in range(100):
             xa = f(xa) % n
             xb = f(f(xb)) % n
             xab = f(xa) % n
@@ -199,14 +199,14 @@ def process(n):
             factors.append(x)
         else:
             # on calcule une nouvelle décomposition
-            #xa, xb = pollardrho(x)
+            xa, xb = pollardrho(x)
 
-            #if xa == 1 or xb == 1:
+            if xa == 1 or xb == 1:
                 # echec: x n'est pas 1er mais sa decomposition ne se fait pas
                 # on essaie une décomposition par division
-                #xa, xb = factorsdiv2(x)
+                xa, xb = factorsdiv2(x)
 
-            xa, xb = pollardpminus1(x)
+            #xa, xb = pollardpminus1(x)
 
             stack.append(xa)
             stack.append(xb)
@@ -223,14 +223,14 @@ if __name__ == '__main__':
 
     server = client.Server(BASE_URL)
 
-    #response = server.query('/get/' + level_arg + '/' + class_arg)
+    response = server.query('/get/' + level_arg + '/' + class_arg)
 
-    #n = response['n']
-    #id = response['id']
+    n = response['n']
+    id = response['id']
 
     # temps de 32 sec
-    n = 15651483603239584752070873247473477662695033558666859835446843507446266207253517620695204448080
-    id = 2683730056
+    #n = 15651483603239584752070873247473477662695033558666859835446843507446266207253517620695204448080
+    #id = 2683730056
 
     print('-' * 80)
     print('length:', len(str(n)))
