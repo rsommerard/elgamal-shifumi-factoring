@@ -18,7 +18,11 @@ lpn = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
     911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997, 1009, 1013,
     1019, 1021]
 
+
 def XGCD(a, b):
+    """
+        Caclul du PGCD.
+    """
     u = (1, 0)
     v = (0, 1)
 
@@ -32,39 +36,33 @@ def XGCD(a, b):
 
     return a, u[0], u[1]
 
-def expmod(rn, b, n):
-    x = 1
-    while b > 0:
-        if b & 1 == 0:
-            b >>= 1
-        else:
-            x = (x * rn) % n
-            b = (b - 1) >> 1
-        rn = (rn * rn) % n
 
-    return x
-
-def _rabin(rn, n):
+def _miller_rabin(rn, n):
+    """
+        Appel interne pour le test de primalité du nombre n avec la méthode de Miller-Rabin.
+    """
     b = n - 1
     a = 0
 
     while b % 2 == 0:
-        b >>= 1
+        b //= 2
         a += 1
 
-    rnpow = expmod(rn, b, n)
-
-    if rnpow == 1:
+    if pow(rn, b, n) == 1:
         return True
 
     for i in range(0, a):
-        if expmod(rn, b, n) == n-1:
+        if pow(rn, b, n) == n-1:
             return True
         b *= 2
 
     return False
 
+
 def _isprime(n):
+    """
+        Appel interne pour le test de primalité du nombre n avec la méthode naive.
+    """
     if n < 7:
         if n in (2, 3, 5):
             return True
@@ -84,7 +82,11 @@ def _isprime(n):
 
     return True
 
-def rabin(n, k=20):
+
+def miller_rabin(n, k=20):
+    """
+        Test de primalité du nombre n avec la méthode de Miller-Rabin.
+    """
     global lpn
 
     if n <= 1024:
@@ -98,18 +100,26 @@ def rabin(n, k=20):
 
     for i in range(0, k):
         rn = random.randint(1, n-1)
-        if not _rabin(rn, n):
+        if not _miller_rabin(rn, n):
             return False
 
     return True
 
+
 def isprime(n):
+    """
+        Test de primalité du nombre n avec la méthode naive si le nombre n a moins de 9 chiffres, méthode de Miller-Rabin sinon.
+    """
     if len(str(n)) > 9:
-        return rabin(n)
+        return miller_rabin(n)
     else:
         return _isprime(n)
 
+
 def heronsqrt(n):
+    """
+        Calcul de la racine carré pour un grand nombre avec la méthode de Héron.
+    """
     s1 = 1
     while True:
         s2 = (s1 + n // s1) // 2
@@ -119,7 +129,10 @@ def heronsqrt(n):
         s1 = s2
 
 def factorsdiv2(n):
-    print('factorsdiv2')
+    """
+        Décomposition en produit de facteurs premiers avec la méthode naive.
+    """
+    print("ici")
     pstack = [2, 3, 5, 7, 11]
     sqrtn = heronsqrt(n)
 
@@ -139,7 +152,9 @@ def factorsdiv2(n):
     return [n, 1]
 
 def pollardrho(n):
-    print('pollardrho')
+    """
+        Décomposition en produit de facteurs premiers avec la méthode de Pollard Rho.
+    """
     f = lambda x: x*x + 1
     xa = 2
     xb = 2
@@ -148,20 +163,19 @@ def pollardrho(n):
         xa = f(xa) % n
         xb = f(f(xb)) % n
         tmp = (xa - xb)
-        for i in range(100):
+        for i in range(1000):
             xa = f(xa) % n
             xb = f(f(xb)) % n
-            xab = f(xa) % n
-            xbb = f(f(xb)) % n
-            tmp *= (xa - xb) * (xab - xbb) % n
-            xa = xab
-            xb = xbb
+            tmp = tmp * (xa - xb) % n
 
         y, _, _ = XGCD(tmp, n)
 
     return [y, n // y]
 
 def _pollardpminus1(n, b):
+    """
+        Appel interne pour la décomposition en produit de facteurs premiers avec la méthode de Pollard p - 1.
+    """
     x = 2
 
     for i in range(1, b + 1):
@@ -174,6 +188,9 @@ def _pollardpminus1(n, b):
     return -1
 
 def pollardpminus1(n):
+    """
+        Décomposition en produit de facteurs premiers avec la méthode de Pollard p - 1.
+    """
     b = 2
     y = -1
 
@@ -187,19 +204,25 @@ def pollardpminus1(n):
     return [y, n // y]
 
 def process(n):
+    """
+        Process de décomposition du nombre.
+    """
     factors = []
     stack = [n]
     while len(stack) != 0:
-        print("#{0}".format(time.strftime("%H:%M:%S")))
+        print(">>time: {0}".format(time.strftime("%H:%M:%S")))
         print('>>stack:', stack)
         print('>>factors:', factors)
         x = stack.pop(-1)
+        if(x == 1):
+            continue
         if isprime(x):
             factors.append(x)
         else:
-            xa, xb = pollardrho(x)
+            #xa, xb = pollardrho(x)
+            xa, xb = pollardpminus1(x)
 
-            if xa == 1 or xb == 1:
+            if xb == 1:
                 xa, xb = factorsdiv2(x)
 
             #xa, xb = pollardpminus1(x)
