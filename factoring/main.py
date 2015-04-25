@@ -132,7 +132,7 @@ def factorsdiv2(n):
     """
         Décomposition en produit de facteurs premiers avec la méthode naive.
     """
-    print("ici")
+    print(">>factorsdiv2")
     pstack = [2, 3, 5, 7, 11]
     sqrtn = heronsqrt(n)
 
@@ -155,6 +155,7 @@ def pollardrho(n):
     """
         Décomposition en produit de facteurs premiers avec la méthode de Pollard Rho.
     """
+    print('>>pollardrho')
     f = lambda x: x*x + 1
     xa = 2
     xb = 2
@@ -172,18 +173,20 @@ def pollardrho(n):
 
     return [y, n // y]
 
-def _pollardpminus1(n, b):
+def _pollardpminus1(n, b, x):
     """
         Appel interne pour la décomposition en produit de facteurs premiers avec la méthode de Pollard p - 1.
     """
-    x = 2
-
     for i in range(1, b + 1):
         x = pow(x, i, n)
 
-    y, _, _ = XGCD(x - 1, n)
-    if y > 1 and y < n:
-        return y
+        if i % 10 == 0:
+            y, _, _ = XGCD(x - 1, n)
+            if y > 1 and y < n:
+                return y
+
+            if y == n or x > n:
+                return -1
 
     return -1
 
@@ -191,12 +194,32 @@ def pollardpminus1(n):
     """
         Décomposition en produit de facteurs premiers avec la méthode de Pollard p - 1.
     """
+    print('>>pollardpminus1')
     b = 2
+    x = 2
     y = -1
 
     while b < n and y == -1:
-        b += 1
-        y = _pollardpminus1(n, b)
+        print('b:', b)
+        print('x:', x)
+        y = _pollardpminus1(n, b, x)
+
+        if b % 12500000 == 0:
+            b = 2
+
+            if x == 2:
+                x += 1
+            else:
+                x += 2
+
+            if x > 2:
+                while not isprime(x):
+                    x += 2
+        else:
+            b *= 50
+
+        if x > n:
+            return [n, 1]
 
     if y == -1:
         return [n, 1]
