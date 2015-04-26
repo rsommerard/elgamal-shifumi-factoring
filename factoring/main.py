@@ -215,6 +215,8 @@ def pollardpminus1(n):
             if x > 2:
                 while not isprime(x):
                     x += 2
+        else:
+            b *= 50
 
         if x > n:
             return [n, 1]
